@@ -447,6 +447,57 @@ class Slider(AxesWidget):
         for cid, func in six.iteritems(self.observers):
             func(val)
 
+    def set_valmin(self, valmin):
+        self.valmin = valmin
+
+        self.ax.set_xlim((valmin, self.valmax))
+
+        xy = self.poly.get_xy()
+        xy[1] = valmin, 1
+        xy[0] = valmin, 0
+        self.poly.set_xy(xy)
+
+        val = self.val
+        if val <= self.valmin:
+            if not self.closedmin:
+                return
+            val = self.valmin
+
+        if self.slidermin is not None and val <= self.slidermin.val:
+            if not self.closedmin:
+                return
+            val = self.slidermin.val
+
+        if self.slidermax is not None and val >= self.slidermax.val:
+            if not self.closedmax:
+                return
+            val = self.slidermax.val
+
+        self.set_val(val)
+
+    def set_valmax(self, valmax):
+        self.valmax = valmax
+
+        self.ax.set_xlim((self.valmin, valmax))
+
+        val = self.val
+        if val >= self.valmax:
+            if not self.closedmax:
+                return
+            val = self.valmax
+
+        if self.slidermin is not None and val <= self.slidermin.val:
+            if not self.closedmin:
+                return
+            val = self.slidermin.val
+
+        if self.slidermax is not None and val >= self.slidermax.val:
+            if not self.closedmax:
+                return
+            val = self.slidermax.val
+
+        self.set_val(val)
+
     def on_changed(self, func):
         """
         When the slider value is changed, call *func* with the new
